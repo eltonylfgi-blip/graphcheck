@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
+import math
 from typing import Any, Iterable
 
 
@@ -64,7 +65,11 @@ def _expect(condition: bool, message: str) -> None:
 
 
 def _is_number(value: Any) -> bool:
-    return isinstance(value, (int, float)) and not isinstance(value, bool)
+    if isinstance(value, bool):
+        return False
+    if isinstance(value, int):
+        return True
+    return isinstance(value, float) and math.isfinite(value)
 
 
 def _parse_timestamp(value: Any, location: str) -> datetime:
@@ -94,14 +99,18 @@ def _valid_budget(value: Any) -> bool:
     if _is_number(value):
         return value > 0
     if isinstance(value, dict) and value:
-        numeric_values = [item for item in value.values() if _is_number(item)]
-        return bool(numeric_values) and all(item > 0 for item in numeric_values)
+        return all(_is_number(item) and item > 0 for item in value.values())
     return False
 
 
 def validate_graph(graph: Any) -> None:
     _expect(isinstance(graph, dict), "graph must be a JSON object")
-    _expect(graph.get("version") == 1, "graph.version must be 1")
+    _expect(
+        isinstance(graph.get("version"), int)
+        and not isinstance(graph.get("version"), bool)
+        and graph["version"] == 1,
+        "graph.version must be the integer 1",
+    )
 
     nodes = graph.get("nodes")
     _expect(isinstance(nodes, list) and bool(nodes), "graph.nodes must be a non-empty list")
@@ -112,8 +121,9 @@ def validate_graph(graph: Any) -> None:
         node_id = node.get("id")
         _expect(isinstance(node_id, str) and bool(node_id.strip()), f"{location}.id must be a non-empty string")
         node_ids.append(node_id)
-        if "side_effect" in node:
-            _expect(isinstance(node["side_effect"], bool), f"{location}.side_effect must be a boolean")
+        for key in ("side_effect", "fan_out"):
+            if key in node:
+                _expect(isinstance(node[key], bool), f"{location}.{key} must be a boolean")
         for key in ("reducer", "approval", "idempotency_key"):
             if key in node:
                 _expect(
@@ -158,9 +168,17 @@ def validate_graph(graph: Any) -> None:
 
 def validate_trace(trace: Any) -> None:
     _expect(isinstance(trace, dict), "trace must be a JSON object")
-    _expect(trace.get("version") == 1, "trace.version must be 1")
+    _expect(
+        isinstance(trace.get("version"), int)
+        and not isinstance(trace.get("version"), bool)
+        and trace["version"] == 1,
+        "trace.version must be the integer 1",
+    )
     events = trace.get("events")
-    _expect(isinstance(events, list), "trace.events must be a list")
+    _expect(
+        isinstance(events, list) and bool(events),
+        "trace.events must be a non-empty list",
+    )
 
     event_ids: list[str] = []
     for index, event in enumerate(events):
@@ -439,13 +457,18 @@ def audit(graph: dict[str, Any], trace: dict[str, Any]) -> AuditResult:
     for source, target in declared_edges:
         outgoing[source].add(target)
     for node_id, targets in sorted(outgoing.items()):
-        if len(targets) > 1 and "reducer" not in node_by_id[node_id]:
+        if (
+            node_by_id[node_id].get("fan_out", False)
+            and len(targets) > 1
+            and "reducer" not in node_by_id[node_id]
+        ):
             diagnostics.append(
                 Diagnostic(
                     severity="error",
                     code="FANOUT_WITHOUT_REDUCER",
                     message=(
-                        f"Node {node_id!r} fans out to {len(targets)} nodes but does not name an explicit reducer."
+                        f"Node {node_id!r} declares fan_out and has {len(targets)} destinations "
+                        "but does not name an explicit reducer."
                     ),
                     node=node_id,
                     details={"targets": sorted(targets)},

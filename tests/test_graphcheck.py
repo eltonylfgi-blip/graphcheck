@@ -118,6 +118,72 @@ class AuditTests(unittest.TestCase):
         with self.assertRaisesRegex(InputError, "graph.edges must be a list"):
             audit(graph, trace)
 
+    def test_conditional_router_is_not_inferred_to_be_fan_out(self) -> None:
+        graph = {
+            "version": 1,
+            "nodes": [{"id": "route"}, {"id": "approve"}, {"id": "reject"}],
+            "edges": [
+                {"from": "route", "to": "approve"},
+                {"from": "route", "to": "reject"},
+            ],
+        }
+        trace = {
+            "version": 1,
+            "events": [
+                {
+                    "id": "t1",
+                    "type": "transition",
+                    "from": "route",
+                    "to": "approve",
+                }
+            ],
+        }
+
+        result = audit(graph, trace)
+
+        self.assertNotIn(
+            "FANOUT_WITHOUT_REDUCER",
+            {item.code for item in result.diagnostics},
+        )
+
+    def test_non_finite_numbers_are_rejected(self) -> None:
+        graph = {
+            "version": 1,
+            "budget": {"cost": float("inf")},
+            "nodes": [{"id": "a"}],
+            "edges": [],
+        }
+        trace = {
+            "version": 1,
+            "events": [{"id": "n1", "type": "node", "node": "a"}],
+        }
+
+        with self.assertRaisesRegex(InputError, "graph.budget must be positive"):
+            audit(graph, trace)
+
+        graph["budget"] = {"cost": 1.0, "unknown": "unbounded"}
+        with self.assertRaisesRegex(InputError, "graph.budget must be positive"):
+            audit(graph, trace)
+
+        graph.pop("budget")
+        trace["events"][0]["cost"] = float("inf")
+        with self.assertRaisesRegex(InputError, "cost must be a non-negative number"):
+            audit(graph, trace)
+
+    def test_boolean_versions_and_empty_traces_are_rejected(self) -> None:
+        graph = {"version": 1, "nodes": [{"id": "a"}], "edges": []}
+        trace = {
+            "version": 1,
+            "events": [{"id": "n1", "type": "node", "node": "a"}],
+        }
+
+        with self.assertRaisesRegex(InputError, "graph.version must be the integer 1"):
+            audit({**graph, "version": True}, trace)
+        with self.assertRaisesRegex(InputError, "trace.version must be the integer 1"):
+            audit(graph, {**trace, "version": True})
+        with self.assertRaisesRegex(InputError, "trace.events must be a non-empty list"):
+            audit(graph, {"version": 1, "events": []})
+
     def test_mermaid_marks_missing_evidence_and_undeclared_edges_red(self) -> None:
         graph, trace = load_case("broken_edges")
         result = audit(graph, trace)

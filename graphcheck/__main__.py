@@ -52,7 +52,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 2
 
     if args.format == "json":
-        print(json.dumps(result.to_dict(), indent=2, ensure_ascii=False))
+        print(
+            json.dumps(
+                result.to_dict(),
+                indent=2,
+                ensure_ascii=False,
+                allow_nan=False,
+            )
+        )
     elif args.format == "mermaid":
         print(render_mermaid(graph, result))
     else:

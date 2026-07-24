@@ -1,7 +1,7 @@
 {
   "version": 1,
   "nodes": [
-    {"id": "plan"},
+    {"id": "plan", "fan_out": true},
     {"id": "worker"},
     {"id": "revise"},
     {"id": "publish", "side_effect": true}

@@ -1,7 +1,7 @@
 {
   "version": 1,
   "nodes": [
-    {"id": "scope", "reducer": "reduce"},
+    {"id": "scope", "fan_out": true, "reducer": "reduce"},
     {"id": "research_a"},
     {"id": "research_b"},
     {"id": "reduce"},

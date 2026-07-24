@@ -61,7 +61,7 @@ graphcheck examples/healthy/graph.json examples/healthy/trace.json
   "max_iterations": 5,
   "budget": {"cost": 2.0},
   "nodes": [
-    {"id": "scope", "reducer": "reduce"},
+    {"id": "scope", "fan_out": true, "reducer": "reduce"},
     {"id": "reduce"},
     {
       "id": "publish",
@@ -79,7 +79,7 @@ graphcheck examples/healthy/graph.json examples/healthy/trace.json
 - `nodes` is a non-empty list with unique string `id` values.
 - `edges` is a list of unique `from`/`to` pairs. Both endpoints must be declared nodes.
 - `required_evidence` is an optional list of evidence identifiers. GraphCheck compares identifiers only; it does not inspect whether the underlying evidence is true or sufficient.
-- A node with more than one outgoing destination is a fan-out and must name a declared node in `reducer`. The MVP checks that the pointer exists, not that every branch truly converges there.
+- GraphCheck never infers parallelism from out-degree: two outgoing edges may be conditional routes. Only a node explicitly annotated with `fan_out: true` is treated as parallel fan-out; when it has multiple destinations, it must name a declared node in `reducer`. The MVP checks that the pointer exists, not that every branch truly converges there.
 - A node with `side_effect: true` must have non-empty `approval` and `idempotency_key` strings. The MVP checks declarations, not enforcement.
 - If the graph contains any cycle, the graph root must declare a positive `max_iterations` or positive `budget`. This is a global declaration and is not proof that a runtime enforces it.
 
@@ -109,7 +109,7 @@ graphcheck examples/healthy/graph.json examples/healthy/trace.json
 }
 ```
 
-- Every event has a unique string `id` and a `type` of `node` or `transition`.
+- `events` must be non-empty. Every event has a unique string `id` and a `type` of `node` or `transition`.
 - A transition is observed **only** when an explicit `transition` event exists. GraphCheck never infers edges from list order or adjacent node events.
 - `evidence` contains evidence IDs carried by that transition event.
 - Timestamps are optional ISO 8601 values with `Z` or a UTC offset. Timing metrics appear only when every node event has both `started_at` and `ended_at`; partial traces are not extrapolated.
