@@ -4,7 +4,7 @@
 
 **A practical field guide to deciding when an agent workflow needs a graph, what each edge should carry, and how to check whether one explicit execution trace matches the declared design.**
 
-Here, “graph engineering” is an informal label for a real engineering move: replacing an opaque, model-directed process with an explicit control-flow graph when the task needs branching, parallel work, loops, or independent verification.
+Here, “graph engineering” informally means replacing a model-directed process with an explicit control-flow graph for tasks that require branching, parallel work, loops, or independent verification.
 
 The graph itself is not the improvement. The improvement is making decisions, evidence, stop conditions, and side effects inspectable.
 
@@ -166,7 +166,7 @@ GraphCheck is an experiment, not a new orchestration framework. Try it against o
 python -m graphcheck graph.json trace.json
 ```
 
-Within 14 days, test five real workflows from at least two runtimes. For every diagnostic, have the workflow owner mark it accepted or rejected after inspecting the same graph and trace. Continue only if rejected diagnostics / total diagnostics is below 20% and at least one accepted finding changes a workflow, test, or guard; otherwise archive the experiment.
+Within 14 days of starting the experiment, test five real workflows from at least two runtimes. For every diagnostic, have the workflow owner mark it accepted or rejected after inspecting the same graph and trace. Continue only if rejected diagnostics / total diagnostics is below 20% and at least one accepted finding changes a workflow, test, or guard; otherwise archive the experiment.
 
 ## Primary sources
 
@@ -181,4 +181,4 @@ Within 14 days, test five real workflows from at least two runtimes. For every d
 
 ---
 
-*GraphCheck · MADRE — July 2026. The claims above are intentionally narrower than the diagrams.*
+*GraphCheck · MADRE, July 2026. The claims above are intentionally narrower than the diagrams. Code and examples: [MIT License](../LICENSE).*
