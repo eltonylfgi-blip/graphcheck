@@ -4,6 +4,12 @@ GraphCheck compares a **declared workflow graph** with one **explicit execution 
 
 It is a small, Python-standard-library MVP. It does not run agents and it does not replace LangGraph, AutoGen, Google ADK, or the OpenAI Agents SDK.
 
+## Field guide
+
+[**Graph engineering without the hype**](docs/graph-engineering-without-the-hype.md) explains when a graph is justified, what evidence should cross each edge, how to bound loops and side effects, and why the declared topology must be compared with an observed trace.
+
+[![Graph engineering without the hype](assets/graph-engineering-without-hype.png)](docs/graph-engineering-without-the-hype.md)
+
 ## Quickstart
 
 Requires Python 3.11+.
