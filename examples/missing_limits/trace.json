@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "events": [
+    {"id": "t1", "type": "transition", "from": "plan", "to": "worker"},
+    {"id": "t2", "type": "transition", "from": "plan", "to": "publish"},
+    {"id": "t3", "type": "transition", "from": "worker", "to": "revise"},
+    {"id": "t4", "type": "transition", "from": "revise", "to": "worker"}
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "events": [
+    {"id": "n1", "type": "node", "node": "scope", "started_at": "2026-07-24T08:00:00Z", "ended_at": "2026-07-24T08:00:02Z", "cost": 0.01},
+    {"id": "t1", "type": "transition", "from": "scope", "to": "research_a", "evidence": ["scope-brief"], "timestamp": "2026-07-24T08:00:02Z"},
+    {"id": "t2", "type": "transition", "from": "scope", "to": "research_b", "evidence": ["scope-brief"], "timestamp": "2026-07-24T08:00:02Z"},
+    {"id": "n2", "type": "node", "node": "research_a", "started_at": "2026-07-24T08:00:02Z", "ended_at": "2026-07-24T08:00:06Z", "cost": 0.04},
+    {"id": "n3", "type": "node", "node": "research_b", "started_at": "2026-07-24T08:00:02Z", "ended_at": "2026-07-24T08:00:05Z", "cost": 0.03},
+    {"id": "t3", "type": "transition", "from": "research_a", "to": "reduce", "evidence": ["source-a"], "timestamp": "2026-07-24T08:00:06Z"},
+    {"id": "t4", "type": "transition", "from": "research_b", "to": "reduce", "evidence": ["source-b"], "timestamp": "2026-07-24T08:00:05Z"},
+    {"id": "n4", "type": "node", "node": "reduce", "started_at": "2026-07-24T08:00:06Z", "ended_at": "2026-07-24T08:00:08Z", "cost": 0.02},
+    {"id": "t5", "type": "transition", "from": "reduce", "to": "publish", "evidence": ["review-verdict"], "timestamp": "2026-07-24T08:00:08Z"},
+    {"id": "n5", "type": "node", "node": "publish", "started_at": "2026-07-24T08:00:08Z", "ended_at": "2026-07-24T08:00:09Z", "cost": 0.01}
+  ]
+}

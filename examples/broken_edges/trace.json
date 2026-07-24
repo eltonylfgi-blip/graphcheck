@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "events": [
+    {"id": "n1", "type": "node", "node": "scope"},
+    {"id": "t1", "type": "transition", "from": "scope", "to": "review", "evidence": []},
+    {"id": "n2", "type": "node", "node": "review"},
+    {"id": "t2", "type": "transition", "from": "review", "to": "archive", "evidence": ["review-verdict"]},
+    {"id": "n3", "type": "node", "node": "archive"}
+  ]
+}

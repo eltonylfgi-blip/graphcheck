@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "nodes": [
+    {"id": "scope", "reducer": "reduce"},
+    {"id": "research_a"},
+    {"id": "research_b"},
+    {"id": "reduce"},
+    {
+      "id": "publish",
+      "side_effect": true,
+      "approval": "human",
+      "idempotency_key": "publish-${run_id}"
+    }
+  ],
+  "edges": [
+    {"from": "scope", "to": "research_a", "required_evidence": ["scope-brief"]},
+    {"from": "scope", "to": "research_b", "required_evidence": ["scope-brief"]},
+    {"from": "research_a", "to": "reduce", "required_evidence": ["source-a"]},
+    {"from": "research_b", "to": "reduce", "required_evidence": ["source-b"]},
+    {"from": "reduce", "to": "publish", "required_evidence": ["review-verdict"]}
+  ]
+}

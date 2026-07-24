@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "nodes": [
+    {"id": "scope"},
+    {"id": "review"},
+    {
+      "id": "publish",
+      "side_effect": true,
+      "approval": "human",
+      "idempotency_key": "publish-${run_id}"
+    },
+    {"id": "archive"}
+  ],
+  "edges": [
+    {"from": "scope", "to": "review", "required_evidence": ["scope-brief"]},
+    {"from": "review", "to": "publish", "required_evidence": ["review-verdict"]}
+  ]
+}

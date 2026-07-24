@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "nodes": [
+    {"id": "plan"},
+    {"id": "worker"},
+    {"id": "revise"},
+    {"id": "publish", "side_effect": true}
+  ],
+  "edges": [
+    {"from": "plan", "to": "worker"},
+    {"from": "plan", "to": "publish"},
+    {"from": "worker", "to": "revise"},
+    {"from": "revise", "to": "worker"}
+  ]
+}
