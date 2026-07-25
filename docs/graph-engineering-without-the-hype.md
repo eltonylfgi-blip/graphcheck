@@ -109,6 +109,10 @@ For long-running or failure-prone work, durable execution matters too. Temporalâ
 
 A beautiful graph can still lie.
 
+![Declared graph versus actual trace: an undeclared transition bypasses the verifier](../assets/declared-vs-actual.png)
+
+*The useful comparison is not diagram versus diagram. It is the declared path versus one observed run.*
+
 Common mismatches include:
 
 - the runtime takes an undeclared transition;
